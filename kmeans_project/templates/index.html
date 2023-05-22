@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>K-Means Clustering</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin:0;
+            padding:0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background-color:#898eb7;
+        }
+
+
+        h1 {
+            text-align: center;
+            color: #fff9f9;
+            margin-top: 0;
+            font-size: 36px;
+            font-weight: bold;
+            background-color: black;
+            font-family: 'Georgia', serif;
+        }
+
+        h3 {
+            text-align: center;
+            color: #090909;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        h4{
+            font-family:'Georgia', serif;
+        }
+
+        
+        ul {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 18px;
+            padding-left: 50px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .form-group input[type="number"],
+        .form-group textarea {
+            width: 40%;
+            height: 36px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        .form-group input[type="submit"],
+        .form-group input[type="button"] {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px 10px;
+            border-radius: 2px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .error-message {
+            color: #f44336;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .visualization {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .visualization img {
+            max-width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .visualization img:hover {
+            transform: scale(1.2);
+        }
+
+        .accuracy {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Add beautiful colors */
+        .bg-primary {
+            background-color: #3366cc;
+            color: #fff;
+        }
+
+        .bg-secondary {
+            background-color: #66cc99;
+            color: #333;
+        }
+
+        .bg-accent {
+            background-color: #ffcc00;
+            color: #333;
+        }
+
+        /* Add nice fonts */
+        .font-primary {
+            font-family: 'Georgia', serif;
+        }
+
+        .font-secondary {
+            font-family: 'Georgia', serif;
+        }
+
+        /* Add zoom-in effect on hover */
+        .zoom-in {
+            transition: transform 0.3s ease;
+        }
+
+        .zoom-in:hover {
+            transform: scale(1.1);
+        }
+    </style>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="font-primary">K-Means Clustering</h1>
+        <strong><p style="font-size: 16px;color:black;font-family: 'Verdana', sans-serif";>K-Means Clustering is an unsupervised learning algorithm that is used to solve clustering problems in machine learning.This algorithm aims to minimize the within-cluster sum of squares, also known as inertia or distortion. It seeks to create compact and well-separated clusters based on the data points' similarity.Using the libraries such as scikit-learn, which provides a robust implementation of the algorithm this visualozation is done.</p></strong>
+        <br><p style="font-size:17px">The K-Means clustering algorithm performs two main tasks:</p>
+        <ul style="font-size:15px;font-family: 'Verdana', sans-serif;color:black">
+            <li>Determines the best value for K center points or centroids through an iterative process.</li><br>
+            <li>Assigns each data point to its closest K-center, creating clusters based on proximity.</li>
+        </ul><br>
+        <center><h4 style="font-size:20px;font-family:'Garamond', serif;color:black">Enter the number of clusters and the data points for clustering:</h4>
+        <form id="kmeans-form" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="k" style="font-family: 'Trebuchet MS', sans-serif;color:black" >Number of Clusters (K):</label>
+                <input type="number" id="k" name="k" min="1" max="10" required>
+            </div>
+            <div class="form-group">
+                <label for="data_points" style="font-family: 'Trebuchet MS', sans-serif;color:black">Data Points (comma-separated):</label>
+                <textarea id="data_points" name="data_points" rows="5" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="bg-primary font-secondary zoom-in">
+                <input type="button" value="Reset" onclick="resetForm()" class="bg-secondary font-secondary zoom-in">
+            </div>
+        </center>
+        </form>
+
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+
+        <div class="visualization">
+            {% if plot_data %}
+                <img id="plotImg" src="data:image/png;base64,{{ plot_data }}" alt="Visualization" class="zoom-in">
+            {% endif %}
+        </div>
+
+        <div id="accuracy" class="accuracy">
+            {% if accuracy is not None %}
+                <h3><strong>Accuracy:</strong> {{ accuracy }}</h3>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        
+        function resetForm() {
+            document.getElementById("k").value = "";
+            document.getElementById("data_points").value = "";
+            var plotImg = document.getElementById("plotImg");
+            if (plotImg) {
+                plotImg.remove();
+            }
+            var accuracyElement = document.getElementById("accuracy");
+            if (accuracyElement) {
+                accuracyElement.textContent = "";
+            }
+        }
+    </script>
+</body>
+</html>
